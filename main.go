@@ -75,7 +75,7 @@ type customDNSProviderConfig struct {
 // within a single webhook deployment**.
 // For example, `cloudflare` may be used as the name of a solver.
 func (c *customDNSProviderSolver) Name() string {
-	return "my-custom-solver"
+	return "freenom"
 }
 
 // Present is responsible for actually presenting the DNS record with the
@@ -145,4 +145,3 @@ func loadConfig(cfgJSON *extapi.JSON) (customDNSProviderConfig, error) {
 
 	return cfg, nil
 }
-
