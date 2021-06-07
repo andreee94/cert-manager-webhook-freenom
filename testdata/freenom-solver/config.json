@@ -1,0 +1,12 @@
+{
+    "usernameSecretRef": {
+        "name": "freenom-account",
+        "key": "username"
+    },
+    "passwordSecretRef": {
+        "name": "freenom-account",
+        "key": "password"
+    },
+    "ttl": 3600,
+    "priority": 100
+}
