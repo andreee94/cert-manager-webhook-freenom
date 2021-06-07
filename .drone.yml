@@ -1,0 +1,15 @@
+kind: pipeline
+type: kubernetes
+name: default
+
+steps:
+- name: docker  
+  image: plugins/docker
+  settings:
+    repo: andreee94/cert-manager-webhook-freenom
+    target: prod
+    username: 
+      from_secret: dockerhub_username
+    password: 
+      from_secret: dockerhub_password
+    dockerfile: ./Dockerfile

@@ -11,9 +11,10 @@ import (
 
 	//"k8s.io/client-go/kubernetes"
 	// metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
-	"k8s.io/klog"
+	"k8s.io/klog/v2"
 
 	"github.com/jetstack/cert-manager/pkg/acme/webhook/apis/acme/v1alpha1"
 	"github.com/jetstack/cert-manager/pkg/acme/webhook/cmd"
@@ -74,8 +75,10 @@ type freenomDNSProviderConfig struct {
 	// These fields will be set by users in the
 	// `issuer.spec.acme.dns01.providers.webhook.config` field.
 
-	Email              string                   `json:"email"`
-	PassswordSecretRef cmmeta.SecretKeySelector `json:"passwordSecretRef"`
+	UsernameSecretRef cmmeta.SecretKeySelector `json:"usernameSecretRef"`
+	PasswordSecretRef cmmeta.SecretKeySelector `json:"passwordSecretRef"`
+	TTL               int                      `json:"ttl"`
+	Priority          int                      `json:"priority"`
 }
 
 // Name is used as the name for this DNS solver when referencing it on the ACME
@@ -101,12 +104,17 @@ func (c *freenomDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) error 
 
 	fmt.Printf("Decoded configuration %v", cfg)
 
-	password, err := c.getSecretKey(cfg.PassswordSecretRef, ch.ResourceNamespace)
+	username, err := c.getSecretKey(cfg.UsernameSecretRef, ch.ResourceNamespace)
 	if nil != err {
 		return err
 	}
 
-	err = freenom.Login(cfg.Email, password)
+	password, err := c.getSecretKey(cfg.PasswordSecretRef, ch.ResourceNamespace)
+	if nil != err {
+		return err
+	}
+
+	err = freenom.Login(username, password)
 	if nil != err {
 		return err
 	}
@@ -115,13 +123,13 @@ func (c *freenomDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) error 
 	fqdn := util.UnFqdn(ch.ResolvedFQDN)
 	subName := fqdn[:len(fqdn)-len(zone)-1]
 
-	err = freenom.AddRecord(ch.ResolvedZone, []freenom.DomainRecord{
+	err = freenom.AddRecord(zone, []freenom.DomainRecord{
 		{
 			Type:     freenom.RecordTypeTXT,
 			Name:     subName,
-			TTL:      3600,
+			TTL:      cfg.TTL,
 			Value:    ch.Key, // Token to present as TXT
-			Priority: 100,
+			Priority: cfg.Priority,
 		},
 	})
 	if nil != err {
@@ -146,12 +154,17 @@ func (c *freenomDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) error 
 
 	fmt.Printf("Decoded configuration %v", cfg)
 
-	password, err := c.getSecretKey(cfg.PassswordSecretRef, ch.ResourceNamespace)
+	username, err := c.getSecretKey(cfg.UsernameSecretRef, ch.ResourceNamespace)
 	if nil != err {
 		return err
 	}
 
-	err = freenom.Login(cfg.Email, password)
+	password, err := c.getSecretKey(cfg.PasswordSecretRef, ch.ResourceNamespace)
+	if nil != err {
+		return err
+	}
+
+	err = freenom.Login(username, password)
 	if nil != err {
 		return err
 	}
@@ -160,12 +173,12 @@ func (c *freenomDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) error 
 	fqdn := util.UnFqdn(ch.ResolvedFQDN)
 	subName := fqdn[:len(fqdn)-len(zone)-1]
 
-	err = freenom.DeleteRecord(ch.ResolvedZone, &freenom.DomainRecord{
+	err = freenom.DeleteRecord(zone, &freenom.DomainRecord{
 		Type:     freenom.RecordTypeTXT,
 		Name:     subName,
-		TTL:      3600,
+		TTL:      cfg.TTL,
 		Value:    ch.Key, // Token to present as TXT
-		Priority: 100,
+		Priority: cfg.Priority,
 	})
 	if nil != err {
 		return err
