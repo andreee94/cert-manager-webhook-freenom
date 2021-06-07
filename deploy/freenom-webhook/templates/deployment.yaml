@@ -1,6 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: {{ .Release.Namespace | quote }}
   name: {{ include "freenom-webhook.fullname" . }}
   labels:
     app: {{ include "freenom-webhook.name" . }}
@@ -19,6 +20,10 @@ spec:
         app: {{ include "freenom-webhook.name" . }}
         release: {{ .Release.Name }}
     spec:
+    {{ if .Values.image.imagePullSecretsName }}
+      imagePullSecrets:
+        - name: {{ .Values.image.imagePullSecretsName }}
+    {{ end }}
       serviceAccountName: {{ include "freenom-webhook.fullname" . }}
       containers:
         - name: {{ .Chart.Name }}

@@ -38,4 +38,5 @@ rendered-manifest.yaml:
 	    --name-template freenom-webhook \
         --set image.repository=$(IMAGE_NAME) \
         --set image.tag=$(IMAGE_TAG) \
+		--namespace cert-manager \
         deploy/freenom-webhook > "$(OUT)/rendered-manifest.yaml"

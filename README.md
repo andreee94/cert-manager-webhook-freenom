@@ -10,6 +10,35 @@ run the following command:
 make rendered-manifest.yaml
 ```
 
+### RBAC
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: cert-manager
+  name: freenom-webhook:secret-reader
+rules:
+- apiGroups: [""]
+  resources: ["secrets"]
+  resourceNames: ["freenom"]
+  verbs: ["get", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: cert-manager
+  name: freenom-webhook:secret-reader
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: freenom-webhook:secret-reader
+subjects:
+- apiGroup: ""
+  kind: ServiceAccount
+  name: freenom-webhook
+```
+
 
 ## Running the test suite
 

@@ -8,14 +8,17 @@
 # here is recommended.
 groupName: acme.andreee94.com
 
+replicaCount: 1
+
 certManager:
   namespace: cert-manager
   serviceAccountName: cert-manager
 
 image:
-  repository: 192.168.1.102:5000/cert-manager-webhook-freenom
+  repository: andreee94/cert-manager-webhook-freenom
   tag: latest
   pullPolicy: IfNotPresent
+  imagePullSecretsName: hubcredential
 
 nameOverride: ""
 fullnameOverride: ""
