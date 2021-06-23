@@ -1,6 +1,4 @@
-# This is a basic workflow that is manually triggered
-
-name: Manual workflow
+name: Github Registry Workflow
 
 # Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
@@ -10,7 +8,7 @@ on:
     inputs:
       name:
         # Friendly description to be shown in the UI instead of 'name'
-        description: 'Person to greet'
+        description: 'Test and Push to Github Registry'
         # Default value if no value is explicitly provided
         default: 'World'
         # Input has to be provided for the workflow to run
@@ -21,6 +19,11 @@ on:
   #  branches: [ main ]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -32,8 +35,42 @@ jobs:
       with:
         go-version: 1.16
 
-    - name: Build
-      run: go build -v ./...
+##########################################
 
-    - name: Test
-      run: go test -v ./...
+    - name: Create secret.yaml file
+      run: |
+          echo $SECRET >> testdata/freenom-solver/secret.yaml
+      shell: bash
+      env:
+        SECRET : ${{secrets.FREENOM_ACCOUNT_SECRET}}
+
+    - name: Run Test
+      run: TEST_ZONE_NAME="andreee94.ml." make test
+
+    - name: Clean Test
+      run: make clean
+
+##########################################
+
+    - name: Log in to the Container registry
+      uses: docker/login-action@v1
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@v3
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+
+##########################################
