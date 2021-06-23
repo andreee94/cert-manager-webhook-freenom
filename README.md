@@ -1,6 +1,8 @@
 # cert-manager-webhook-freenom
 Webhook for Cert-Manager for the freenom domain provider.
 
+The image is available on DockerHub at `andreee94/cert-manager-webhook-freenom`.
+
 ## Heml Chart Manifest
 
 To generate the .yaml manifest from the helm chart contained inside the repository, 
@@ -44,7 +46,7 @@ subjects:
 
 To running the test suite:
 
-- configure the username and password inside `testdata/freenom-solver/secret.yaml.template`.
 - run: `mv testdata/freenom-solver/secret.yaml.template testdata/freenom-solver/secret.yaml`
+- configure the username and password inside `testdata/freenom-solver/secret.yaml`.
 - run: `TEST_ZONE_NAME="example.com." make test`
 - run: `make clean`
