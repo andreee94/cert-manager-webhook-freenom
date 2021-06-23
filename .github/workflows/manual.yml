@@ -44,6 +44,12 @@ jobs:
       env:
         SECRET : ${{secrets.FREENOM_ACCOUNT_SECRET}}
 
+    - name: Check secret
+      run: ls -lah testdata/freenom-solver
+
+    - name: Go version
+      run: go version
+
     - name: Run Test
       run: TEST_ZONE_NAME="andreee94.ml." make test
 
