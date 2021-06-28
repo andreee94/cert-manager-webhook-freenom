@@ -10,5 +10,4 @@ require (
 	k8s.io/apiserver v0.22.0-alpha.2 // indirect
 	k8s.io/client-go v0.22.0-alpha.2
 	k8s.io/klog/v2 v2.9.0
-	sigs.k8s.io/testing_frameworks v0.1.2
 )
