@@ -209,7 +209,9 @@ func (c *freenomDNSProviderSolver) runAction(cfg freenomDNSProviderConfig, ch *v
 	if err != nil {
 		fmt.Printf("freenom.GetDomainInfo(): error %v", err)
 	} else {
-		fmt.Printf("records: %v", info.Records)
+		for _, record := range info.Records {
+			fmt.Printf("record -> name: %v, value: %v, type: %v", record.Name, record.Value, record.Type)
+		}
 	}
 
 	if actionType == AddRecord {
@@ -230,6 +232,20 @@ func (c *freenomDNSProviderSolver) runAction(cfg freenomDNSProviderConfig, ch *v
 			Value:    ch.Key, // Token to present as TXT
 			Priority: cfg.Priority,
 		})
+
+		fmt.Printf("freenom.DeleteRecord err: %v", err)
+
+		err = nil // REMOVE THIS CODE THAT MASK THE DELETE RECORD ERROR
 	}
+
+	info, err2 := freenom.GetDomainInfo(zone)
+	if err2 != nil {
+		fmt.Printf("freenom.GetDomainInfo(): error %v", err)
+	} else {
+		for _, record := range info.Records {
+			fmt.Printf("record -> name: %v, value: %v, type: %v\n", record.Name, record.Value, record.Type)
+		}
+	}
+
 	return err
 }
