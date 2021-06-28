@@ -73,7 +73,7 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Extract metadata (tags, labels) for Docker
-      id: meta
+      id: meta_github
       uses: docker/metadata-action@v3
       with:
         images: ${{ env.REGISTRY_GITHUB }}/${{ env.IMAGE_NAME }}
@@ -83,8 +83,8 @@ jobs:
       with:
         context: .
         push: true
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
+        tags: ${{ steps.meta_github.outputs.tags }}
+        labels: ${{ steps.meta_github.outputs.labels }}
 
 ##########################################
 
@@ -96,7 +96,7 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: Extract metadata (tags, labels) for Docker
-      id: meta
+      id: meta_dockerhub
       uses: docker/metadata-action@v3
       with:
         images: ${{ env.REGISTRY_DOCKERHUB }}/${{ env.IMAGE_NAME }}
@@ -106,7 +106,7 @@ jobs:
       with:
         context: .
         push: true
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
+        tags: ${{ steps.meta_dockerhub.outputs.tags }}
+        labels: ${{ steps.meta_dockerhub.outputs.labels }}
 
 ##########################################
