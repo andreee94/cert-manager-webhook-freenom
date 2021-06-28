@@ -19,7 +19,8 @@ func TestRunsSuite(t *testing.T) {
 	// The manifest path should contain a file named config.json that is a
 	// snippet of valid configuration that should be included on the
 	// ChallengeRequest passed as part of the test cases.
-	//
+
+	rand.Seed(time.Now().UnixNano())
 
 	randomIndex := rand.Intn(1000)
 
