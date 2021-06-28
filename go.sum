@@ -396,8 +396,8 @@ github.com/inconshreveable/mousetrap v1.0.0 h1:Z8tu5sraLXCXIcARxBp/8cbvlwVa7Z1NH
 github.com/inconshreveable/mousetrap v1.0.0/go.mod h1:PxqpIevigyE2G7u3NXJIT2ANytuPF1OarO4DADm73n8=
 github.com/influxdata/influxdb1-client v0.0.0-20191209144304-8bf82d3c094d/go.mod h1:qj24IKcXYK6Iy9ceXlo3Tc+vtHo9lIhSX5JddghvEPo=
 github.com/jessevdk/go-flags v1.4.0/go.mod h1:4FA24M0QyGHXBuZZK/XkWh8h0e1EYbRYJSGM75WSRxI=
-github.com/jetstack/cert-manager v1.4.0-beta.0 h1:f7270bVb3cGUbMw6Orq2Yyyt3UszGvhOBp+G0hp3AqE=
-github.com/jetstack/cert-manager v1.4.0-beta.0/go.mod h1:ZwlTcZLU4ClMNQ9UVT5m4Uds1Essnus6s/d1+8f6wAw=
+github.com/jetstack/cert-manager v1.4.0 h1:tjQElwmDX2rIp/NmdacyG6dinl+Ot3KJqBMLnRcWVy8=
+github.com/jetstack/cert-manager v1.4.0/go.mod h1:ZwlTcZLU4ClMNQ9UVT5m4Uds1Essnus6s/d1+8f6wAw=
 github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af/go.mod h1:Nht3zPeWKUH0NzdCt2Blrr5ys8VGpn0CEB0cQHVjt7k=
 github.com/jmespath/go-jmespath v0.4.0/go.mod h1:T8mJZnbsbmF+m6zOOFylbeCJqk5+pHWvzYPziyZiYoo=
 github.com/jmespath/go-jmespath/internal/testify v1.5.1/go.mod h1:L3OGu8Wl2/fWfCI6z80xFu9LTZmf1ZRjMHUOPmWr69U=

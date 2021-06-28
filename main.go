@@ -26,6 +26,13 @@ import (
 
 var GroupName = os.Getenv("GROUP_NAME")
 
+type ActionType int
+
+const (
+	AddRecord ActionType = iota
+	DeleteRecord
+)
+
 func main() {
 	if GroupName == "" {
 		panic("GROUP_NAME must be specified")
@@ -101,42 +108,9 @@ func (c *freenomDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) error 
 	if err != nil {
 		return err
 	}
-
 	fmt.Printf("Decoded configuration %v", cfg)
 
-	username, err := c.getSecretKey(cfg.UsernameSecretRef, ch.ResourceNamespace)
-	if nil != err {
-		return err
-	}
-
-	password, err := c.getSecretKey(cfg.PasswordSecretRef, ch.ResourceNamespace)
-	if nil != err {
-		return err
-	}
-
-	err = freenom.Login(username, password)
-	if nil != err {
-		return err
-	}
-
-	zone := util.UnFqdn(ch.ResolvedZone)
-	fqdn := util.UnFqdn(ch.ResolvedFQDN)
-	subName := fqdn[:len(fqdn)-len(zone)-1]
-
-	err = freenom.AddRecord(zone, []freenom.DomainRecord{
-		{
-			Type:     freenom.RecordTypeTXT,
-			Name:     subName,
-			TTL:      cfg.TTL,
-			Value:    ch.Key, // Token to present as TXT
-			Priority: cfg.Priority,
-		},
-	})
-	if nil != err {
-		return err
-	}
-
-	return nil
+	return c.runAction(cfg, ch, AddRecord)
 }
 
 // CleanUp should delete the relevant TXT record from the DNS provider console.
@@ -152,39 +126,7 @@ func (c *freenomDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) error 
 		return err
 	}
 
-	fmt.Printf("Decoded configuration %v", cfg)
-
-	username, err := c.getSecretKey(cfg.UsernameSecretRef, ch.ResourceNamespace)
-	if nil != err {
-		return err
-	}
-
-	password, err := c.getSecretKey(cfg.PasswordSecretRef, ch.ResourceNamespace)
-	if nil != err {
-		return err
-	}
-
-	err = freenom.Login(username, password)
-	if nil != err {
-		return err
-	}
-
-	zone := util.UnFqdn(ch.ResolvedZone)
-	fqdn := util.UnFqdn(ch.ResolvedFQDN)
-	subName := fqdn[:len(fqdn)-len(zone)-1]
-
-	err = freenom.DeleteRecord(zone, &freenom.DomainRecord{
-		Type:     freenom.RecordTypeTXT,
-		Name:     subName,
-		TTL:      cfg.TTL,
-		Value:    ch.Key, // Token to present as TXT
-		Priority: cfg.Priority,
-	})
-	if nil != err {
-		return err
-	}
-
-	return nil
+	return c.runAction(cfg, ch, DeleteRecord)
 }
 
 // Initialize will be called when the webhook first starts.
@@ -241,4 +183,53 @@ func (c *freenomDNSProviderSolver) getSecretKey(secret cmmeta.SecretKeySelector,
 	}
 
 	return string(data), nil
+}
+
+func (c *freenomDNSProviderSolver) runAction(cfg freenomDNSProviderConfig, ch *v1alpha1.ChallengeRequest, actionType ActionType) error {
+	username, err := c.getSecretKey(cfg.UsernameSecretRef, ch.ResourceNamespace)
+	if nil != err {
+		return err
+	}
+
+	password, err := c.getSecretKey(cfg.PasswordSecretRef, ch.ResourceNamespace)
+	if nil != err {
+		return err
+	}
+
+	err = freenom.Login(username, password)
+	if nil != err {
+		return err
+	}
+
+	zone := util.UnFqdn(ch.ResolvedZone)
+	fqdn := util.UnFqdn(ch.ResolvedFQDN)
+	subName := fqdn[:len(fqdn)-len(zone)-1]
+
+	info, err := freenom.GetDomainInfo(zone)
+	if err != nil {
+		fmt.Printf("freenom.GetDomainInfo(): error %v", err)
+	} else {
+		fmt.Printf("records: %v", info.Records)
+	}
+
+	if actionType == AddRecord {
+		err = freenom.AddRecord(zone, []freenom.DomainRecord{
+			{
+				Type:     freenom.RecordTypeTXT,
+				Name:     subName,
+				TTL:      cfg.TTL,
+				Value:    ch.Key, // Token to present as TXT
+				Priority: cfg.Priority,
+			},
+		})
+	} else if actionType == DeleteRecord {
+		err = freenom.DeleteRecord(zone, &freenom.DomainRecord{
+			Type:     freenom.RecordTypeTXT,
+			Name:     subName,
+			TTL:      cfg.TTL,
+			Value:    ch.Key, // Token to present as TXT
+			Priority: cfg.Priority,
+		})
+	}
+	return err
 }
