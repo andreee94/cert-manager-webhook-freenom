@@ -1,7 +1,9 @@
 # cert-manager-webhook-freenom
 Webhook for Cert-Manager for the freenom domain provider.
 
-The image is available on DockerHub at `andreee94/cert-manager-webhook-freenom`.
+The image is available on DockerHub at:
+- `andreee94/cert-manager-webhook-freenom`
+- `ghcr.io/andreee94/cert-manager-webhook-freenom`
 
 ## Heml Chart Manifest
 
@@ -39,6 +41,70 @@ subjects:
 - apiGroup: ""
   kind: ServiceAccount
   name: freenom-webhook
+```
+
+### Secrets
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: freenom
+  namespace: cert-manager
+type: kubernetes.io/basic-auth
+stringData:
+  username: REPLACE_WITH_USERNAME
+  password: REPLACE_WITH_PASSWORD
+```
+
+### Deployment
+
+```yaml
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod-dns-issuer
+spec:
+  acme:
+    # The ACME server URL
+    server: https://acme-v02.api.letsencrypt.org/directory # https://acme-staging-v02.api.letsencrypt.org/directory
+    # Email address used for ACME registration
+    email: REPLACE_WITH_EMAIL
+    # Name of a secret used to store the ACME account private key
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    solvers:
+    - dns01:
+        webhook:
+          groupName: acme.andreee94.com
+          solverName: freenom
+          config:
+            usernameSecretRef:
+              name: freenom
+              key: username
+            passwordSecretRef:
+              name: freenom
+              key: password
+            ttl: 3600
+            priority: 100  
+```
+
+### Certificate
+
+```yaml
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: example-wildcard-certificate
+  namespace: default
+spec:
+  dnsNames:
+    - example.com
+    - "*.example.com"
+  secretName: example-wildcard-tls
+  issuerRef:
+    name: letsencrypt-prod-dns-issuer
+    kind: ClusterIssuer
 ```
 
 
