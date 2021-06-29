@@ -1,0 +1,60 @@
+name: Github Workflow to Build and Push to DockerHub
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on:
+  workflow_dispatch:
+    # Inputs the workflow accepts.
+    inputs:
+      versions:
+        # Friendly description to be shown in the UI instead of 'version'
+        description: 'Versions of the docker image (ex. 0.3.0,latest)'
+        # Default value if no value is explicitly provided
+        default: 'latest'
+        # Input has to be provided for the workflow to run
+        required: true
+  # push:
+  #   # branches: [ main ]
+  #   tags:
+  #   - 'v*'
+  
+  #pull_request:
+  #  branches: [ main ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+
+env:
+  REGISTRY_GITHUB: ghcr.io
+  REGISTRY_DOCKERHUB: andreee94
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+##########################################
+
+    - name: Log in to the Container registry
+      uses: docker/login-action@v1
+      with:
+        registry: ${{ env.REGISTRY_GITHUB }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta_github
+      uses: docker/metadata-action@v3
+      with:
+        images: ${{ env.REGISTRY_GITHUB }}/${{ env.IMAGE_NAME }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        push: true
+        tags: ${{ github.event.inputs.versions }}
+        labels: ${{ github.event.inputs.versions }}
+
+##########################################
