@@ -57,7 +57,7 @@ jobs:
       with:
         context: .
         push: true
-        tags: ${{ steps.meta_dockerhub.outputs.tags }}
-        labels: ${{ steps.meta_dockerhub.outputs.tags }}
+        tags: ${{ steps.meta_github.outputs.tags }}
+        labels: ${{ steps.meta_github.outputs.tags }}
 
 ##########################################
