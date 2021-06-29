@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
+	"time"
 
 	extapi "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
 	// v1 "k8s.io/apiextensions-apiserver/pkg/apis/core/v1"
@@ -22,6 +24,9 @@ import (
 	"github.com/jetstack/cert-manager/pkg/issuer/acme/dns/util"
 
 	"github.com/tzwsoho/go-freenom/freenom"
+
+	// "github.com/avast/retry-go/v3"
+	"github.com/rafaeljesus/retry-go"
 )
 
 var GroupName = os.Getenv("GROUP_NAME")
@@ -205,47 +210,65 @@ func (c *freenomDNSProviderSolver) runAction(cfg freenomDNSProviderConfig, ch *v
 	fqdn := util.UnFqdn(ch.ResolvedFQDN)
 	subName := fqdn[:len(fqdn)-len(zone)-1]
 
-	info, err := freenom.GetDomainInfo(zone)
-	if err != nil {
-		fmt.Printf("freenom.GetDomainInfo(): error %v", err)
-	} else {
-		for _, record := range info.Records {
-			fmt.Printf("record -> name: %v, value: %v, type: %v", record.Name, record.Value, record.Type)
-		}
-	}
+	// info, err := freenom.GetDomainInfo(zone)
+	// if err != nil {
+	// 	fmt.Printf("freenom.GetDomainInfo(): error %v\n", err)
+	// } else {
+	// 	for _, record := range info.Records {
+	// 		fmt.Printf("	record -> name: %v, value: %v, type: %v\n", record.Name, record.Value, record.Type)
+	// 	}
+	// }
 
 	if actionType == AddRecord {
-		err = freenom.AddRecord(zone, []freenom.DomainRecord{
-			{
-				Type:     freenom.RecordTypeTXT,
-				Name:     subName,
-				TTL:      cfg.TTL,
-				Value:    ch.Key, // Token to present as TXT
-				Priority: cfg.Priority,
-			},
-		})
+		err = retry.Do(func() error {
+			return freenom.AddRecord(zone, []freenom.DomainRecord{
+				{
+					Type:     freenom.RecordTypeTXT,
+					Name:     subName,
+					TTL:      cfg.TTL,
+					Value:    ch.Key, // Token to present as TXT
+					Priority: cfg.Priority,
+				},
+			})
+		}, 3, 2*time.Second)
 	} else if actionType == DeleteRecord {
-		err = freenom.DeleteRecord(zone, &freenom.DomainRecord{
-			Type:     freenom.RecordTypeTXT,
-			Name:     subName,
-			TTL:      cfg.TTL,
-			Value:    ch.Key, // Token to present as TXT
-			Priority: cfg.Priority,
-		})
+		info, err := freenom.GetDomainInfo(zone)
+		if err == nil {
+			exists := false
+			for _, record := range info.Records {
+				// fmt.Printf("record -> name: %v, value: %v, type: %v\n", record.Name, record.Value, record.Type)
+				if strings.EqualFold(record.Name, subName) {
+					exists = true
+				}
+			}
+			if exists {
+				err = retry.Do(func() error {
+					err = freenom.DeleteRecord(zone, &freenom.DomainRecord{
+						Type:     freenom.RecordTypeTXT,
+						Name:     subName,
+						TTL:      cfg.TTL,
+						Value:    ch.Key, // Token to present as TXT
+						Priority: cfg.Priority,
+					})
+					fmt.Printf("freenom.DeleteRecord retries err: %v\n", err)
+					return err
+				}, 10, 3*time.Second)
 
-		fmt.Printf("freenom.DeleteRecord err: %v", err)
-
-		err = nil // REMOVE THIS CODE THAT MASK THE DELETE RECORD ERROR
-	}
-
-	info, err2 := freenom.GetDomainInfo(zone)
-	if err2 != nil {
-		fmt.Printf("freenom.GetDomainInfo(): error %v", err)
-	} else {
-		for _, record := range info.Records {
-			fmt.Printf("record -> name: %v, value: %v, type: %v\n", record.Name, record.Value, record.Type)
+				fmt.Printf("freenom.DeleteRecord final err: %v\n", err)
+			} else {
+				fmt.Printf("Domain %s.%s does not exists. Skip deleting.\n", subName, zone)
+			}
 		}
 	}
+
+	// info, err2 := freenom.GetDomainInfo(zone)
+	// if err2 != nil {
+	// 	fmt.Printf("freenom.GetDomainInfo(): error %v\n", err)
+	// } else {
+	// 	for _, record := range info.Records {
+	// 		fmt.Printf("	record -> name: %v, value: %v, type: %v\n", record.Name, record.Value, record.Type)
+	// 	}
+	// }
 
 	return err
 }

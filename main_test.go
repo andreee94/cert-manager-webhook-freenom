@@ -30,9 +30,11 @@ func TestRunsSuite(t *testing.T) {
 		dns.SetAllowAmbientCredentials(false),
 		dns.SetManifestPath("testdata/freenom-solver"),
 		dns.SetBinariesPath("_test/kubebuilder/bin"),
-		dns.SetUseAuthoritative(false),
+		// dns.SetStrict(false),
+		dns.SetPollInterval(15*time.Second),
+		dns.SetUseAuthoritative(true),
 		dns.SetResolvedFQDN(fmt.Sprintf("cert-manager-dns%d-tests.%s", randomIndex, zone)), // randomize FQDN to avoid frequent update problems
-		dns.SetPropagationLimit(10*time.Minute),
+		dns.SetPropagationLimit(20*time.Minute),
 	)
 
 	// solver := example.New("59351")
