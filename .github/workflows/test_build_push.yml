@@ -112,14 +112,15 @@ jobs:
     #   uses: ms-jpq/sync-dockerhub-readme@v1
     #   with:
     #     username: ${{ secrets.DOCKERHUB_USERNAME }}
-    #     password: ${{ secrets.DOCKERHUB_TOKEN }}
+    #     password: ${{ secrets.DOCKERHUB_PASSWORD }}
     #     readme: "./README.md"
+        # repository: ${{ env.IMAGE_NAME }}
 
     - name: Sync DockerHub Readme (DockerHub)
       uses: peter-evans/dockerhub-description@v2
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
         repository: ${{ env.IMAGE_NAME }}
         readme-filepath: ./README.md
 ##########################################
