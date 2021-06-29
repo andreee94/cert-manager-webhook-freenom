@@ -12,7 +12,7 @@ $(shell mkdir -p "$(OUT)")
 
 test: _test/kubebuilder
 	go mod tidy
-	go test -v .
+	go test -timeout 30m -v .
 
 _test/kubebuilder:
 	curl -fsSL https://github.com/kubernetes-sigs/kubebuilder/releases/download/v$(KUBEBUILDER_VERSION)/kubebuilder_$(KUBEBUILDER_VERSION)_$(OS)_$(ARCH).tar.gz -o kubebuilder-tools.tar.gz
