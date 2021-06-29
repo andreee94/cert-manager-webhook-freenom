@@ -46,7 +46,7 @@ jobs:
       id: meta_dockerhub
       uses: docker/metadata-action@v3
       with:
-        images: ${{ env.REGISTRY_DOCKERHUB }}/${{ env.IMAGE_NAME }}
+        images: ${{ env.IMAGE_NAME }}
         tags: |
           latest
           ${{ github.event.inputs.version }}
