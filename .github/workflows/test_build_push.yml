@@ -1,4 +1,4 @@
-name: Github Registry Workflow
+name: Test Build and Push
 
 # Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
@@ -65,20 +65,20 @@ jobs:
 
 ##########################################
 
-    - name: Log in to the Container registry
+    - name: Log in to the Container registry (ghcr.io)
       uses: docker/login-action@v1
       with:
         registry: ${{ env.REGISTRY_GITHUB }}
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Extract metadata (tags, labels) for Docker
+    - name: Extract metadata (tags, labels) for Docker (ghcr.io)
       id: meta_github
       uses: docker/metadata-action@v3
       with:
         images: ${{ env.REGISTRY_GITHUB }}/${{ env.IMAGE_NAME }}
 
-    - name: Build and push Docker image
+    - name: Build and push Docker image (ghcr.io)
       uses: docker/build-push-action@v2
       with:
         context: .
@@ -88,19 +88,19 @@ jobs:
 
 ##########################################
 
-    - name: Log in to the Container registry
+    - name: Log in to the Container registry (DockerHub)
       uses: docker/login-action@v1
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Extract metadata (tags, labels) for Docker
+    - name: Extract metadata (tags, labels) for Docker (DockerHub)
       id: meta_dockerhub
       uses: docker/metadata-action@v3
       with:
         images: ${{ env.IMAGE_NAME }}
 
-    - name: Build and push Docker image
+    - name: Build and push Docker image (DockerHub)
       uses: docker/build-push-action@v2
       with:
         context: .
