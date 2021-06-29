@@ -252,7 +252,7 @@ func (c *freenomDNSProviderSolver) runAction(cfg freenomDNSProviderConfig, ch *v
 					})
 					fmt.Printf("freenom.DeleteRecord retries err: %v\n", err)
 					return err
-				}, 10, 3*time.Second)
+				}, 3, 2*time.Second)
 
 				fmt.Printf("freenom.DeleteRecord final err: %v\n", err)
 			} else {
