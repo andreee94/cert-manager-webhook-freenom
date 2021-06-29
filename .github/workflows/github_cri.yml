@@ -6,11 +6,11 @@ on:
   workflow_dispatch:
     # Inputs the workflow accepts.
     inputs:
-      versions:
+      version:
         # Friendly description to be shown in the UI instead of 'version'
-        description: 'Versions of the docker image (ex. 0.3.0,latest)'
+        description: 'Version of the docker image (ex. 0.3.0)'
         # Default value if no value is explicitly provided
-        default: 'latest'
+        default: '0.3.0'
         # Input has to be provided for the workflow to run
         required: true
   # push:
@@ -43,11 +43,14 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    # - name: Extract metadata (tags, labels) for Docker
-    #   id: meta_github
-    #   uses: docker/metadata-action@v3
-    #   with:
-    #     images: ${{ env.REGISTRY_GITHUB }}/${{ env.IMAGE_NAME }}
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta_github
+      uses: docker/metadata-action@v3
+      with:
+        images: ${{ env.REGISTRY_GITHUB }}/${{ env.IMAGE_NAME }}
+        tags: |
+          latest
+          ${{ github.event.inputs.version }}
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v2
