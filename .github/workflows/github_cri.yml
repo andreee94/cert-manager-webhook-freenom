@@ -1,4 +1,4 @@
-name: Github Workflow to Build and Push to DockerHub
+name: Build and Push to Github CRI
 
 # Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
