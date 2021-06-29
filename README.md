@@ -107,6 +107,34 @@ spec:
     kind: ClusterIssuer
 ```
 
+### Ingress nginx
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: example-ingress
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  tls:
+    - hosts:
+      - service.example.com
+      secretName: example-wildcard-tls
+  rules:
+    - host: service.example.com
+      http: 
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: example-svc
+                port:
+                  number: 3000
+```
+
 
 ## Running the test suite
 
