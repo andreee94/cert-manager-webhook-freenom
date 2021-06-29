@@ -107,11 +107,19 @@ jobs:
         push: true
         tags: ${{ steps.meta_dockerhub.outputs.tags }}
         labels: ${{ steps.meta_dockerhub.outputs.labels }}
-        
+
+    # - name: Sync DockerHub Readme (DockerHub)
+    #   uses: ms-jpq/sync-dockerhub-readme@v1
+    #   with:
+    #     username: ${{ secrets.DOCKERHUB_USERNAME }}
+    #     password: ${{ secrets.DOCKERHUB_TOKEN }}
+    #     readme: "./README.md"
+
     - name: Sync DockerHub Readme (DockerHub)
-      uses: ms-jpq/sync-dockerhub-readme@v1
+      uses: peter-evans/dockerhub-description@v2
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
-        readme: "./README.md"
+        repository: ${{ env.REGISTRY_DOCKERHUB }}/${{ env.IMAGE_NAME }}
+        readme-filepath: ./README.md
 ##########################################
