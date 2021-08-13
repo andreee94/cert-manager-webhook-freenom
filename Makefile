@@ -3,14 +3,15 @@ ARCH ?= $(shell go env GOARCH)
 
 IMAGE_NAME := andreee94/cert-manager-webhook-freenom
 IMAGE_TAG := $(shell cat .version)
+CHART_VERSION := ${shell grep '^version:' deploy/freenom-webhook/Chart.yaml | egrep -o '([0-9]+.[0-9]+.[0-9]+)'}
 
 OUT := $(shell pwd)/_out
 
-KUBEBUILDER_VERSION=2.3.2
+KUBEBUILDER_VERSION=3.1.0
 
 $(shell mkdir -p "$(OUT)")
 
-test: _test/kubebuilder
+test: checkversion _test/kubebuilder
 	go mod tidy
 	go test -timeout 30m -v .
 
@@ -27,17 +28,30 @@ clean: clean-kubebuilder
 clean-kubebuilder:
 	rm -Rf _test/kubebuilder
 
-build:
+build: checkversion
 	docker build -t "$(IMAGE_NAME):$(IMAGE_TAG)" .
 	docker build -t "$(IMAGE_NAME):latest" .
 	docker push $(IMAGE_NAME):$(IMAGE_TAG)
 	docker push $(IMAGE_NAME):latest
 
+checkversion:
+ifeq ($(CHART_VERSION), $(IMAGE_TAG))
+	@echo "CHART_VERSION: $(CHART_VERSION), IMAGE_TAG: $(IMAGE_TAG) are the same"
+else
+	@echo "CHART_VERSION: $(CHART_VERSION), IMAGE_TAG: $(IMAGE_TAG) are different. Exiting"
+	$(error CHART_VERSION: $(CHART_VERSION), IMAGE_TAG: $(IMAGE_TAG) are different. Exiting)
+	exit 0
+	exit 1
+endif
+
+
 .PHONY: rendered-manifest.yaml
-rendered-manifest.yaml:
+rendered-manifest.yaml: checkversion
 	helm template \
 	    --name-template freenom-webhook \
         --set image.repository=$(IMAGE_NAME) \
         --set image.tag=$(IMAGE_TAG) \
+		--set chart.metadata.version=$(IMAGE_TAG) \
+		--version=$(IMAGE_TAG) \
 		--namespace cert-manager \
         deploy/freenom-webhook > "$(OUT)/rendered-manifest.yaml"
