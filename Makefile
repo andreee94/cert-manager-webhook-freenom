@@ -54,7 +54,7 @@ rendered-manifest.yaml: checkversion
 	helm template \
 	    --name-template freenom-webhook \
         --set image.repository=$(IMAGE_NAME) \
-        --set image.tag=$(IMAGE_TAG) \
+        --set image.tag=v$(IMAGE_TAG) \
 		--set chart.metadata.version=$(IMAGE_TAG) \
 		--version=$(IMAGE_TAG) \
 		--namespace cert-manager \
