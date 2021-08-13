@@ -7,12 +7,16 @@ CHART_VERSION := ${shell grep '^version:' deploy/freenom-webhook/Chart.yaml | eg
 
 OUT := $(shell pwd)/_out
 
-KUBEBUILDER_VERSION=3.1.0
+KUBEBUILDER_VERSION=2.3.2
 
 $(shell mkdir -p "$(OUT)")
 
 test: checkversion _test/kubebuilder
 	go mod tidy
+	TEST_ASSET_ETCD="_test/kubebuilder/bin/etcd" \
+	TEST_ASSET_KUBE_APISERVER="_test/kubebuilder/bin/kube-apiserver" \
+	TEST_ASSET_KUBECTL="_test/kubebuilder/bin/kubectl" \
+	TEST_ASSET_KUBEBUILDER="_test/kubebuilder/bin/kube-builder" \
 	go test -timeout 30m -v .
 
 _test/kubebuilder:

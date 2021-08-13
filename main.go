@@ -109,7 +109,7 @@ func (c *freenomDNSProviderSolver) Name() string {
 // cert-manager itself will later perform a self check to ensure that the
 // solver has correctly configured the DNS provider.
 func (c *freenomDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) error {
-	cfg, err := loadConfig(ch.Config)
+	cfg, err := loadConfig((*extapi.JSON)(ch.Config))
 	if err != nil {
 		return err
 	}
@@ -126,7 +126,7 @@ func (c *freenomDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) error 
 // concurrently.
 func (c *freenomDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) error {
 	// TODO: add code that deletes a record from the DNS provider's console
-	cfg, err := loadConfig(ch.Config)
+	cfg, err := loadConfig((*extapi.JSON)(ch.Config))
 	if err != nil {
 		return err
 	}
