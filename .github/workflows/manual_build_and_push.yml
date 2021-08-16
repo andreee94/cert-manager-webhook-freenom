@@ -13,7 +13,7 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  build_and_push:
+  build_and_push_ghcrio:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -49,6 +49,22 @@ jobs:
         platforms: linux/amd64,linux/arm64
         tags: ${{ steps.meta_github.outputs.tags }}
         labels: ${{ steps.meta_github.outputs.labels }}
+
+##########################################
+##########################################
+
+  build_and_push_dockerhub:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+##########################################
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
 
 ##########################################
 
