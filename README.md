@@ -5,6 +5,17 @@ The image is available on DockerHub at:
 - `andreee94/cert-manager-webhook-freenom`
 - `ghcr.io/andreee94/cert-manager-webhook-freenom`
 
+## Install cert-manager
+
+The cert-manager tested version is v1.5.0.
+
+It is necessary to install both the `cert-manager.yaml` and the `cert-manager-crd.yaml`.
+
+```bash
+sudo kubectl apply -f https://github.com/jetstack/cert-manager/releases/latest/download/cert-manager.yaml
+sudo kubectl apply -f https://github.com/jetstack/cert-manager/releases/latest/download/cert-manager-crd.yaml
+```
+
 ## Heml Chart Manifest
 
 To generate the .yaml manifest from the helm chart contained inside the repository, 
@@ -12,6 +23,12 @@ run the following command:
 
 ```bash
 make rendered-manifest.yaml
+```
+
+or install directly from github releases:
+
+```bash
+sudo kubectl apply -f https://github.com/andreee94/cert-manager-webhook-freenom/releases/latest/download/cert-manager-freenom.yaml
 ```
 
 ### RBAC
@@ -57,7 +74,7 @@ stringData:
   password: REPLACE_WITH_PASSWORD
 ```
 
-### Deployment
+### Cluster Issuer
 
 ```yaml
 apiVersion: cert-manager.io/v1
@@ -89,7 +106,7 @@ spec:
             priority: 100  
 ```
 
-### Certificate
+### Wildcard Certificate
 
 ```yaml
 apiVersion: cert-manager.io/v1
@@ -117,6 +134,34 @@ metadata:
   namespace: default
   annotations:
     kubernetes.io/ingress.class: nginx
+spec:
+  tls:
+    - hosts:
+      - service.example.com
+      secretName: example-wildcard-tls
+  rules:
+    - host: service.example.com
+      http: 
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: example-svc
+                port:
+                  number: 3000
+```
+
+### Ingress traefik
+
+In alternative to the nginx ingress it is possible to use **Treafik**.
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: example-ingress
+  namespace: default
 spec:
   tls:
     - hosts:
