@@ -69,8 +69,8 @@ jobs:
       run: make rendered-manifest.yaml
 
     - name: Set the manifest name Env
-      run: echo "MANIFEST_FILE_NAME=cert-manager-freenom-v$(cat .version).yaml" >> $GITHUB_ENV
-      # run: echo "cert-manager-freenom-v$(cat .version).yaml" >> $MANIFEST_FILE_NAME
+      run: echo "MANIFEST_FILE_NAME=cert-manager-freenom.yaml" >> $GITHUB_ENV
+      # run: echo "MANIFEST_FILE_NAME=cert-manager-freenom-v$(cat .version).yaml" >> $GITHUB_ENV
 
     - name: Create the final .yaml file
       run: cp ./_out/rendered-manifest.yaml ${{ env.MANIFEST_FILE_NAME }}
