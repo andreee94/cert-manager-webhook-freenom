@@ -189,3 +189,17 @@ To running the test suite:
 - configure the username and password inside `testdata/freenom-solver/secret.yaml`.
 - run: `TEST_ZONE_NAME="example.com." make test`
 - run: `make clean`
+
+
+## Known Issues
+
+While running the server is logging:
+
+```bash
+E0816 10:37:02.707993   10473 controller.go:116] loading OpenAPI spec for "v1alpha1.acme.andreee94.com" failed with: OpenAPI spec does not exist
+I0816 10:37:02.708046   10473 controller.go:129] OpenAPI AggregationController: action for item v1alpha1.acme.andreee94.com: Rate Limited Requeue.
+```
+
+This warning is also present in the original repo for the creation of custom webhook challenges: [webhook-example](https://github.com/cert-manager/webhook-example/issues/27).
+
+Please contribute in case any solution will be found.
