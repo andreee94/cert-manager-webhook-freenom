@@ -40,9 +40,9 @@ build: checkversion
 
 checkversion:
 ifeq ($(CHART_VERSION), $(IMAGE_TAG))
-	@echo "CHART_VERSION: $(CHART_VERSION), IMAGE_TAG: $(IMAGE_TAG) are the same"
+	@echo "CHART_VERSION: $(CHART_VERSION), IMAGE_TAG: $(IMAGE_TAG) are the same. Continuing.."
 else
-	@echo "CHART_VERSION: $(CHART_VERSION), IMAGE_TAG: $(IMAGE_TAG) are different. Exiting"
+	@echo "CHART_VERSION: $(CHART_VERSION), IMAGE_TAG: $(IMAGE_TAG) are different. Exiting.."
 	$(error CHART_VERSION: $(CHART_VERSION), IMAGE_TAG: $(IMAGE_TAG) are different. Exiting)
 	exit 0
 	exit 1
@@ -56,6 +56,5 @@ rendered-manifest.yaml: checkversion
         --set image.repository=$(IMAGE_NAME) \
         --set image.tag=v$(IMAGE_TAG) \
 		--set chart.metadata.version=$(IMAGE_TAG) \
-		--version=$(IMAGE_TAG) \
 		--namespace cert-manager \
         deploy/freenom-webhook > "$(OUT)/rendered-manifest.yaml"
