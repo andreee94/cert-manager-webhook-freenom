@@ -17,7 +17,7 @@ test: checkversion _test/kubebuilder
 	TEST_ASSET_KUBE_APISERVER="_test/kubebuilder/bin/kube-apiserver" \
 	TEST_ASSET_KUBECTL="_test/kubebuilder/bin/kubectl" \
 	TEST_ASSET_KUBEBUILDER="_test/kubebuilder/bin/kube-builder" \
-	go test -timeout 30m -v .
+	go test -timeout 30m .
 
 _test/kubebuilder:
 	curl -fsSL https://github.com/kubernetes-sigs/kubebuilder/releases/download/v$(KUBEBUILDER_VERSION)/kubebuilder_$(KUBEBUILDER_VERSION)_$(OS)_$(ARCH).tar.gz -o kubebuilder-tools.tar.gz
