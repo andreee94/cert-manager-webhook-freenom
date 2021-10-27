@@ -14,3 +14,11 @@ sources:
 # maintainers:
 #   - name: andreee94
 #     email: email
+annotations:
+  artifacthub.io/images: |
+    - name: webhook-freenom
+      image: ghcr.io/andreee94/cert-manager-webhook-freenom:main
+      whitelisted: true    
+  artifacthub.io/operator: "false"
+  artifacthub.io/operatorCapabilities: None
+  artifacthub.io/prerelease: "false"
