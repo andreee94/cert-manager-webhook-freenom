@@ -18,3 +18,6 @@ _test
 _out
 testdata/freenom-solver/secret.yaml
 k3s_setup.md
+
+
+cert-manager-webhook-freenom

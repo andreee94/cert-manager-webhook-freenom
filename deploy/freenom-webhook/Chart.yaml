@@ -1,8 +1,8 @@
 apiVersion: v1
-appVersion: v0.7.1
+appVersion: v1.7.1
 description: A Helm chart for a freenom dns01 challange webhook
 name: freenom-webhook
-version: 0.7.1
+version: 1.7.1
 keywords:
   - cert-manager
   - letsencrypt
@@ -11,9 +11,6 @@ keywords:
   - dns01
 sources:
   - https://github.com/andreee94/cert-manager-webhook-freenom
-# maintainers:
-#   - name: andreee94
-#     email: email
 annotations:
   artifacthub.io/images: |
     - name: webhook-freenom
@@ -22,3 +19,6 @@ annotations:
   artifacthub.io/operator: "false"
   artifacthub.io/operatorCapabilities: None
   artifacthub.io/prerelease: "false"
+# maintainers:
+#   - name: andreee94
+#     email: email
