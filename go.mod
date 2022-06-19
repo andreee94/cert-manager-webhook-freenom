@@ -1,6 +1,6 @@
 module cert-manager-webhook-freenom
 
-go 1.18
+go 1.16
 
 require (
 	github.com/cert-manager/cert-manager v1.8.1
