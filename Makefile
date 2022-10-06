@@ -9,6 +9,8 @@ OUT := $(shell pwd)/_out
 
 KUBEBUILDER_VERSION=2.3.2
 
+K8S_VERSION=1.25.0
+
 $(shell mkdir -p "$(OUT)")
 
 test: checkversion _test/kubebuilder
@@ -19,13 +21,21 @@ test: checkversion _test/kubebuilder
 	TEST_ASSET_KUBEBUILDER="_test/kubebuilder/bin/kube-builder" \
 	go test -timeout 30m .
 
-_test/kubebuilder:
+_test/kubebuilderold:
 	curl -fsSL https://github.com/kubernetes-sigs/kubebuilder/releases/download/v$(KUBEBUILDER_VERSION)/kubebuilder_$(KUBEBUILDER_VERSION)_$(OS)_$(ARCH).tar.gz -o kubebuilder-tools.tar.gz
 	mkdir -p _test/kubebuilder
 	tar -xvf kubebuilder-tools.tar.gz
 	mv kubebuilder_$(KUBEBUILDER_VERSION)_$(OS)_$(ARCH)/bin _test/kubebuilder/
 	rm kubebuilder-tools.tar.gz
 	rm -R kubebuilder_$(KUBEBUILDER_VERSION)_$(OS)_$(ARCH)
+
+_test/kubebuilder:
+	curl -fsSL https://storage.googleapis.com/kubebuilder-tools/kubebuilder-tools-$(K8S_VERSION)-$(OS)-$(ARCH).tar.gz -o kubebuilder-tools.tar.gz
+	mkdir -p _test/kubebuilder
+	tar -xvf kubebuilder-tools.tar.gz
+	mv kubebuilder/bin _test/kubebuilder/
+	rm kubebuilder-tools.tar.gz
+	rm -R kubebuilder
 
 clean: clean-kubebuilder
 

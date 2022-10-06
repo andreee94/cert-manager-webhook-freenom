@@ -7,8 +7,6 @@ The image is available on DockerHub at:
 
 ## Install cert-manager
 
-The cert-manager tested version is v1.6.0.
-
 It is necessary to install both the `cert-manager.yaml` and the `cert-manager-crd.yaml`.
 
 ```bash
