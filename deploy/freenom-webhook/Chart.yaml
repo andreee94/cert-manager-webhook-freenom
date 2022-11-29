@@ -1,8 +1,8 @@
 apiVersion: v1
-appVersion: v1.10.0
+appVersion: v1.10.1
 description: A Helm chart for a freenom dns01 challange webhook
 name: freenom-webhook
-version: 1.10.0
+version: 1.10.1
 keywords:
   - cert-manager
   - letsencrypt

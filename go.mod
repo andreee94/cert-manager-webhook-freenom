@@ -5,12 +5,12 @@ go 1.19
 require (
 	// github.com/cert-manager/cert-manager v1.9.1 //0-beta.1.0.20220928080006-c5443d82d4da
 	// github.com/cert-manager/cert-manager v1.10.0-alpha.0
-	github.com/cert-manager/cert-manager v1.10.0
+	github.com/cert-manager/cert-manager v1.10.1
 	github.com/rafaeljesus/retry-go v0.0.0-20171214204623-5981a380a879
 	github.com/tzwsoho/go-freenom v0.0.0-20201109024018-fe2c93cab446
-	k8s.io/apiextensions-apiserver v0.25.3
-	k8s.io/apimachinery v0.25.3
-	k8s.io/client-go v0.25.3
+	k8s.io/apiextensions-apiserver v0.25.4
+	k8s.io/apimachinery v0.25.4
+	k8s.io/client-go v0.25.4
 	k8s.io/klog/v2 v2.80.1
 )
 
@@ -94,9 +94,9 @@ require (
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	k8s.io/api v0.25.3 // indirect
-	k8s.io/apiserver v0.25.3 // indirect
-	k8s.io/component-base v0.25.3 // indirect
+	k8s.io/api v0.25.4 // indirect
+	k8s.io/apiserver v0.25.4 // indirect
+	k8s.io/component-base v0.25.4 // indirect
 	k8s.io/kube-aggregator v0.25.2 // indirect
 	k8s.io/kube-openapi v0.0.0-20220803164354-a70c9af30aea // indirect
 	k8s.io/utils v0.0.0-20220922133306-665eaaec4324 // indirect
